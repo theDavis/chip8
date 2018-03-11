@@ -1,8 +1,5 @@
 package io.github.thedavis.chip8;
 
-import java.util.Map;
-import java.util.Optional;
-
 public class Chip8 {
 
     private final boolean debug;
