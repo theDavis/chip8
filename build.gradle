@@ -3,23 +3,22 @@ apply plugin: 'java'
 apply plugin: 'jacoco'
 
 repositories {
-	jcenter()
     mavenLocal()
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	compile 'com.beust:jcommander:1.71'
-	compile 'com.google.guava:guava:24.0'
+    compile 'com.beust:jcommander:1.72'
+    compile 'com.google.guava:guava:23.5-jre'
 
-	testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'
 }
 
 jacocoTestReport {
-	reports {
-		xml.enabled = true
-		html.enabled = true
-	}
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
 check.dependsOn jacocoTestReport
