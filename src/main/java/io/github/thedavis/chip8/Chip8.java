@@ -2,8 +2,11 @@ package io.github.thedavis.chip8;
 
 public class Chip8 {
 
-    private final boolean debug;
+    boolean debugParam;
 
+    String romParam;
+
+    private final boolean debug;
     private final CPU cpu;
     private final Graphics graphics;
     private final Sound sound;

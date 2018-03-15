@@ -1,0 +1,25 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+repositories {
+	jcenter()
+    mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compile 'com.beust:jcommander:1.71'
+	compile 'com.google.guava:guava:24.0'
+
+	testCompile 'junit:junit:4.12'
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		html.enabled = true
+	}
+}
+
+check.dependsOn jacocoTestReport
