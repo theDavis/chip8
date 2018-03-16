@@ -1,4 +1,7 @@
-package io.github.thedavis.chip8;
+package io.github.thedavis.chip8.cpu;
+
+import io.github.thedavis.chip8.memory.Memory;
+import io.github.thedavis.chip8.memory.MemoryOutOfBoundsException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +19,7 @@ public class CPU {
     private short[] stack = new short[16];
     private short stackPointer = 0;
 
-    private short[] memory = new short[4096];
+    private final Memory memory;
 
     private short delayTimer = 0;
     private short soundTimer = 0;
@@ -25,46 +28,39 @@ public class CPU {
         loadFonts();
     }
 
+    public CPU(Memory memory){
+        this.memory = memory;
+    }
+
     private void loadFonts(){
         //TODO: load fonts into memory locations [0-80]
     }
 
-    public void loadRom(File rom) throws IOException {
+    public void loadRom(File rom) throws CPUException {
         try(FileInputStream fis = new FileInputStream(rom)){
             int nextByte = 0;
             int location = ROM_START;
             while((nextByte = fis.read()) >= 0){
-                write(location++, nextByte);
+                memory.write(location++, nextByte);
             }
+        } catch (IOException | MemoryOutOfBoundsException ex){
+            throw new CPUException("Failed to load ROM", ex);
         }
     }
 
-    public void dumpMemory(){
-        for(int i = 0; i < memory.length; i = i+2){
-            int current = read(i);
-            current = current << 8;
-            current += read(i+1);
-            System.out.println(Integer.toHexString(current));
-        }
-    }
-
-    public void write(int location, int value){
-        memory[location] = (short) (value & 0xFF);
-    }
-
-    public short read(int location){
-        return (short) (memory[location] & 0xFF);
-    }
-
-    public void step(){
+    public void step() throws CPUException {
         execute(decode(fetch()));
         updateTimers();
     }
 
-    private int fetch(){
-        int instruction = (read(programCounter) << 8) + read(programCounter+1);
-        programCounter += 2;
-        return instruction;
+    private int fetch() throws CPUException{
+        try {
+            int instruction = (memory.read(programCounter) << 8) + memory.read(programCounter + 1);
+            programCounter += 2;
+            return instruction;
+        } catch (MemoryOutOfBoundsException ex){
+            throw new CPUException("Exception reading from memory", ex);
+        }
     }
 
     private int[] decode(int instruction){

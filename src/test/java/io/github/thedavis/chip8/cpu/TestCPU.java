@@ -1,10 +1,11 @@
-package io.github.thedavis.chip8;
+package io.github.thedavis.chip8.cpu;
 
 import java.io.File;
 import java.io.IOException;
 
 public class TestCPU {
 
+    /**
     public static void main(String[] args) throws IOException {
         CPU cpu = new CPU();
         File file = new File("/home/thedavis/roms/chip8/PONG");
@@ -14,4 +15,7 @@ public class TestCPU {
             cpu.step();
         }
     }
+     */
+
+
 }

@@ -1,5 +1,8 @@
 package io.github.thedavis.chip8;
 
+import io.github.thedavis.chip8.cpu.CPU;
+import io.github.thedavis.chip8.memory.Memory;
+
 public class Chip8 {
 
     boolean debugParam;
@@ -14,7 +17,7 @@ public class Chip8 {
 
     public Chip8(boolean debug){
         this.debug = debug;
-        this.cpu = new CPU();
+        this.cpu = new CPU(new Memory());
         this.graphics = new Graphics();
         this.sound = new Sound();
         this.inputDevice = new InputDevice();
