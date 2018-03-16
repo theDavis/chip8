@@ -10,9 +10,6 @@ import java.io.IOException;
 public class CPU {
     private static final int ROM_START = 0x200;
 
-    private short[] registers = new short[16];
-    private int indexRegister = 0;
-
     private int programCounter = ROM_START;
     private int opCode = 0;
 
@@ -20,6 +17,7 @@ public class CPU {
     private short stackPointer = 0;
 
     private final Memory memory;
+    private final RegisterBlock registers;
 
     private short delayTimer = 0;
     private short soundTimer = 0;
@@ -28,12 +26,17 @@ public class CPU {
         loadFonts();
     }
 
-    public CPU(Memory memory){
+    public CPU(Memory memory, RegisterBlock registers){
         this.memory = memory;
+        this.registers = registers;
     }
 
     private void loadFonts(){
         //TODO: load fonts into memory locations [0-80]
+    }
+
+    int getProgramCounter(){
+        return programCounter;
     }
 
     public void loadRom(File rom) throws CPUException {
@@ -69,7 +72,7 @@ public class CPU {
         return new int[]{opCode,operand};
     }
 
-    private void execute(int[] decodedInstruction){
+    private void execute(int[] decodedInstruction) throws CPUException{
         switch(decodedInstruction[0]){
             case 0x0:
                 System.out.println("Bunch of options");
@@ -92,7 +95,7 @@ public class CPU {
             case 0x6:
                 int register = (decodedInstruction[1] & 0x0F00) >> 8;
                 int value = decodedInstruction[1] & 0xFF;
-                registers[register] = (short) value;
+                registers.setVX(register, value);
                 System.out.println("Set V"+Integer.toHexString(register)+" to "+Integer.toHexString(value));
                 break;
             case 0x7:
@@ -106,7 +109,7 @@ public class CPU {
                 break;
             case 0xA:
                 int address = decodedInstruction[1] & 0x0FFF;
-                indexRegister = address;
+                registers.setIndexRegister(address);
                 System.out.println("Set I to "+Integer.toHexString(address));
                 break;
             case 0xB:
@@ -125,7 +128,7 @@ public class CPU {
                 System.out.println("Bunch of things");
                 break;
             default:
-                throw new IllegalArgumentException("Invalid opcode: "+Integer.toHexString(decodedInstruction[0]));
+                throw new CPUException("Invalid opcode: "+Integer.toHexString(decodedInstruction[0]));
         }
     }
     private void updateTimers(){

@@ -1,9 +1,16 @@
 package io.github.thedavis.chip8.cpu;
 
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 
 public class TestCPU {
+
+    @Test
+    public void testStep(){
+
+    }
 
     /**
     public static void main(String[] args) throws IOException {
