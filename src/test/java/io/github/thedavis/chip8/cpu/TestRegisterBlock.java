@@ -32,6 +32,22 @@ public class TestRegisterBlock {
         final int value = 0xFF;
         RegisterBlock register = new RegisterBlock();
         register.setVX(index, value);
-        assertEquals(register.getVX(index), value);
+        assertEquals(value, register.getVX(index));
+    }
+
+    @Test
+    public void testSetGetIndexRegister_highValue(){
+        final int value = 0xFFFF;
+        RegisterBlock registers = new RegisterBlock();
+        registers.setIndexRegister(value);
+        assertEquals((value & 0xFFF), registers.getIndexRegister());
+    }
+
+    @Test
+    public void testSetGetIndexRegister(){
+        final int value = 0x111;
+        RegisterBlock registers = new RegisterBlock();
+        registers.setIndexRegister(value);
+        assertEquals(value, registers.getIndexRegister());
     }
 }

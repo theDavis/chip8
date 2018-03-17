@@ -22,7 +22,7 @@ public class TestMemory {
         final int value = 0xFF;
         Memory memory = new Memory();
         memory.write(location, value);
-        assertEquals(memory.read(location), value);
+        assertEquals(value, memory.read(location));
     }
 
     @Test(expected=MemoryOutOfBoundsException.class)

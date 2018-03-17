@@ -6,9 +6,13 @@ import io.github.thedavis.chip8.memory.MemoryOutOfBoundsException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CPU {
     private static final int ROM_START = 0x200;
+
+    private static Logger logger = Logger.getLogger(CPU.class.getSimpleName());
 
     private int programCounter = ROM_START;
     private int opCode = 0;
@@ -93,10 +97,7 @@ public class CPU {
                 System.out.println("Skip next if Vx == Vy");
                 break;
             case 0x6:
-                int register = (decodedInstruction[1] & 0x0F00) >> 8;
-                int value = decodedInstruction[1] & 0xFF;
-                registers.setVX(register, value);
-                System.out.println("Set V"+Integer.toHexString(register)+" to "+Integer.toHexString(value));
+                loadVxRegister(decodedInstruction);
                 break;
             case 0x7:
                 System.out.println("Add NN to Vx (no carry)");
@@ -131,6 +132,14 @@ public class CPU {
                 throw new CPUException("Invalid opcode: "+Integer.toHexString(decodedInstruction[0]));
         }
     }
+
+    private void loadVxRegister(int[] decodedInstruction) throws CPUException {
+        int register = (decodedInstruction[1] & 0x0F00) >> 8;
+        int value = decodedInstruction[1] & 0xFF;
+        registers.setVX(register, value);
+        System.out.println("Set V" + Integer.toHexString(register) + " to " + Integer.toHexString(value));
+    }
+
     private void updateTimers(){
         //TODO: handle timers and figure out how to keep 60hz
     }
