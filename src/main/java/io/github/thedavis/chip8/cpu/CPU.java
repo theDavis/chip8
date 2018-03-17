@@ -6,16 +6,9 @@ import io.github.thedavis.chip8.memory.MemoryOutOfBoundsException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CPU {
-    private static final int ROM_START = 0x200;
-
-    private static Logger logger = Logger.getLogger(CPU.class.getSimpleName());
-
-    private int programCounter = ROM_START;
-    private int opCode = 0;
+    static final int ROM_START = 0x200;
 
     private short[] stack = new short[16];
     private short stackPointer = 0;
@@ -39,10 +32,6 @@ public class CPU {
         //TODO: load fonts into memory locations [0-80]
     }
 
-    int getProgramCounter(){
-        return programCounter;
-    }
-
     public void loadRom(File rom) throws CPUException {
         try(FileInputStream fis = new FileInputStream(rom)){
             int nextByte = 0;
@@ -62,8 +51,8 @@ public class CPU {
 
     private int fetch() throws CPUException{
         try {
-            int instruction = (memory.read(programCounter) << 8) + memory.read(programCounter + 1);
-            programCounter += 2;
+            int pc = registers.getProgramCounter();
+            int instruction = (memory.read(pc) << 8) + memory.read(pc + 1);
             return instruction;
         } catch (MemoryOutOfBoundsException ex){
             throw new CPUException("Exception reading from memory", ex);
@@ -109,12 +98,10 @@ public class CPU {
                 System.out.println("Skip next if Vx != Vy");
                 break;
             case 0xA:
-                int address = decodedInstruction[1] & 0x0FFF;
-                registers.setIndexRegister(address);
-                System.out.println("Set I to "+Integer.toHexString(address));
+                loadIndexRegister(decodedInstruction);
                 break;
             case 0xB:
-                System.out.println("Jump to V0 + "+Integer.toHexString(decodedInstruction[1]));
+                jumpToV0PlusNNN(decodedInstruction);
                 break;
             case 0xC:
                 System.out.println("Random");
@@ -134,10 +121,25 @@ public class CPU {
     }
 
     private void loadVxRegister(int[] decodedInstruction) throws CPUException {
-        int register = (decodedInstruction[1] & 0x0F00) >> 8;
+        int register = (decodedInstruction[1] & 0xF00) >> 8;
         int value = decodedInstruction[1] & 0xFF;
         registers.setVX(register, value);
+        registers.incrementProgramCounter();
         System.out.println("Set V" + Integer.toHexString(register) + " to " + Integer.toHexString(value));
+    }
+
+    private void loadIndexRegister(int[] decodedInstruction) throws CPUException {
+        int address = decodedInstruction[1] & 0xFFF;
+        registers.setIndexRegister(address);
+        registers.incrementProgramCounter();
+        System.out.println("Set I to "+Integer.toHexString(address));
+    }
+
+    private void jumpToV0PlusNNN(int[] decodedInstruction) throws CPUException{
+        int address = decodedInstruction[1] & 0xFFF;
+        int v0 = registers.getVX(0);
+        registers.jumpProgramCounter(address + v0);
+        System.out.println("Jump to V0 + NNN: " + Integer.toHexString(v0) + " + " + Integer.toHexString(address));
     }
 
     private void updateTimers(){

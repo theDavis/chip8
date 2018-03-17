@@ -50,4 +50,24 @@ public class TestRegisterBlock {
         registers.setIndexRegister(value);
         assertEquals(value, registers.getIndexRegister());
     }
+
+    @Test
+    public void testProgramCounterStartsAt0x200(){
+        assertEquals(CPU.ROM_START, new RegisterBlock().getProgramCounter());
+    }
+
+    @Test
+    public void testIncrememtProgramCounter(){
+        RegisterBlock registers = new RegisterBlock();
+        registers.incrementProgramCounter();
+        assertEquals(CPU.ROM_START+2, registers.getProgramCounter());
+    }
+
+    @Test
+    public void testJumpProgramCounter(){
+        final int address = 0x400;
+        RegisterBlock registers = new RegisterBlock();
+        registers.jumpProgramCounter(address);
+        assertEquals(address, registers.getProgramCounter());
+    }
 }

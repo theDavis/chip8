@@ -22,15 +22,49 @@ public class TestCPU {
     }
 
     @Test
-    public void testLoadVxRegister() throws Exception{
+    public void testLoadVxRegisterWithNN() throws Exception{
         Memory memory = new Memory();
-        RegisterBlock registers = new RegisterBlock();
         memory.write(0x200, 0x6A);
         memory.write(0x201, 0x02);
-        CPU cpu = new CPU(memory, registers);
-        cpu.step();
+
+        RegisterBlock registers = new RegisterBlock();
+        assertEquals(0, registers.getVX(0xA));
+
+        new CPU(memory, registers).step();
 
         assertEquals(0x02, registers.getVX(0xA));
+    }
+
+    @Test
+    public void testLoadIndexRegisterWithNNN() throws Exception {
+        Memory memory = new Memory();
+        memory.write(0x200, 0xAF);
+        memory.write(0x201, 0xFF);
+
+        RegisterBlock registers = new RegisterBlock();
+        assertEquals(0, registers.getIndexRegister());
+
+        new CPU(memory, registers).step();
+
+        assertEquals(0xFFF, registers.getIndexRegister());
+    }
+
+    @Test
+    public void testJumpToV0PlusNNN() throws Exception {
+        final int v0 = 0x05;
+        final int jumpValue = 0x0A;
+
+        Memory memory = new Memory();
+        memory.write(0x200, 0xB0);
+        memory.write(0x201, jumpValue);
+
+        RegisterBlock registers = new RegisterBlock();
+        registers.setVX(0, v0);
+        assertEquals(CPU.ROM_START, registers.getProgramCounter());
+
+        new CPU(memory, registers).step();
+
+        assertEquals(v0 + jumpValue, registers.getProgramCounter());
     }
 
 }

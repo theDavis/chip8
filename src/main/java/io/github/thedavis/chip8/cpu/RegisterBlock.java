@@ -4,6 +4,7 @@ public class RegisterBlock {
 
     private final short[] registers;
     private int indexRegister = 0;
+    private int programCounter = CPU.ROM_START;
 
     public RegisterBlock(){
         registers = new short[16];
@@ -31,5 +32,17 @@ public class RegisterBlock {
 
     public void setIndexRegister(int value){
         indexRegister = (value & 0xFFF);
+    }
+
+    public int getProgramCounter(){
+        return programCounter;
+    }
+
+    public void jumpProgramCounter(int address){
+        programCounter = (address & 0xFFF);
+    }
+
+    public void incrementProgramCounter(){
+        programCounter += 2;
     }
 }
