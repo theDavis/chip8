@@ -71,7 +71,7 @@ public class CPU {
                 System.out.println("Bunch of options");
                 break;
             case 0x1:
-                System.out.println("Jump to "+Integer.toHexString(decodedInstruction[1]));
+                jumpToAddress(decodedInstruction);
                 break;
             case 0x2:
                 System.out.println("Call sub "+Integer.toHexString(decodedInstruction[1]));
@@ -133,6 +133,12 @@ public class CPU {
         registers.setIndexRegister(address);
         registers.incrementProgramCounter();
         System.out.println("Set I to "+Integer.toHexString(address));
+    }
+
+    private void jumpToAddress(int[] decodedInstruction){
+        int address = decodedInstruction[1];
+        registers.jumpProgramCounter(address);
+        System.out.println("Jump to "+Integer.toHexString(address));
     }
 
     private void jumpToV0PlusNNN(int[] decodedInstruction) throws CPUException{

@@ -22,6 +22,19 @@ public class TestCPU {
     }
 
     @Test
+    public void testJumpToNNN() throws Exception {
+        Memory memory = new Memory();
+        memory.write(0x200, 0x10);
+        memory.write(0x201, 0x0A);
+
+        RegisterBlock registers = new RegisterBlock();
+
+        new CPU(memory, registers).step();
+
+        assertEquals(0x00A, registers.getProgramCounter());
+    }
+
+    @Test
     public void testLoadVxRegisterWithNN() throws Exception{
         Memory memory = new Memory();
         memory.write(0x200, 0x6A);
