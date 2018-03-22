@@ -2,14 +2,20 @@ package io.github.thedavis.chip8.cpu;
 
 import io.github.thedavis.chip8.memory.Memory;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestCPU {
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Ignore("used to write ROM to memory to figure out instruction patterns")
     @Test
@@ -19,6 +25,24 @@ public class TestCPU {
         cpu.loadRom(new File("/home/thedavis/roms/chip8/PONG"));
         System.out.println("0000200: "+Integer.toHexString(memory.read(0x200)));
         System.out.println("0000201: "+Integer.toHexString(memory.read(0x201)));
+    }
+
+    @Test
+    public void testLoadRom() throws Exception {
+        final byte[] romBytes = new byte[]{0x12, 0x34, 0x56, 0x78};
+
+        File rom = new File(tempFolder.getRoot(), "TESTROM");
+        try(FileOutputStream fout = new FileOutputStream(rom)){
+            fout.write(romBytes);
+        }
+
+        Memory memory = new Memory();
+        CPU cpu = new CPU(memory, new RegisterBlock());
+        cpu.loadRom(rom);
+
+        for(int i = 0; i < romBytes.length; i++){
+            assertEquals((int) romBytes[i], (int) memory.read(i + CPU.ROM_START));
+        }
     }
 
     @Test
