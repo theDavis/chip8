@@ -2,6 +2,7 @@ package io.github.thedavis.chip8.cpu;
 
 import io.github.thedavis.chip8.memory.Memory;
 import io.github.thedavis.chip8.memory.MemoryOutOfBoundsException;
+import io.github.thedavis.chip8.util.Masker;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,9 +61,9 @@ public class CPU {
     }
 
     private int[] decode(int instruction){
-        int operand = (instruction & 0x0FFFF);
-        int opCode = (operand & 0x0F000) >> 12;
-        return new int[]{opCode,operand};
+        int maskedInstruction = Masker.maskInstruction(instruction);
+        int opCode = Masker.maskOpCode(instruction) >> 12;
+        return new int[]{opCode,maskedInstruction};
     }
 
     private void execute(int[] decodedInstruction) throws CPUException{
@@ -122,14 +123,14 @@ public class CPU {
 
     private void loadVxRegister(int[] decodedInstruction) throws CPUException {
         int register = (decodedInstruction[1] & 0xF00) >> 8;
-        int value = decodedInstruction[1] & 0xFF;
+        int value = Masker.maskByte(decodedInstruction[1]);
         registers.setVX(register, value);
         registers.incrementProgramCounter();
         System.out.println("Set V" + Integer.toHexString(register) + " to " + Integer.toHexString(value));
     }
 
     private void loadIndexRegister(int[] decodedInstruction) throws CPUException {
-        int address = decodedInstruction[1] & 0xFFF;
+        int address = Masker.maskAddress(decodedInstruction[1]);
         registers.setIndexRegister(address);
         registers.incrementProgramCounter();
         System.out.println("Set I to "+Integer.toHexString(address));
@@ -142,7 +143,7 @@ public class CPU {
     }
 
     private void jumpToV0PlusNNN(int[] decodedInstruction) throws CPUException{
-        int address = decodedInstruction[1] & 0xFFF;
+        int address = Masker.maskAddress(decodedInstruction[1]);
         int v0 = registers.getVX(0);
         registers.jumpProgramCounter(address + v0);
         System.out.println("Jump to V0 + NNN: " + Integer.toHexString(v0) + " + " + Integer.toHexString(address));

@@ -1,5 +1,7 @@
 package io.github.thedavis.chip8.cpu;
 
+import io.github.thedavis.chip8.util.Masker;
+
 public class RegisterBlock {
 
     private final short[] registers;
@@ -12,7 +14,7 @@ public class RegisterBlock {
 
     public short getVX(int index) throws CPUException {
         if(index >=0 && index <= 15) {
-            return (short) (registers[index] & 0xFF);
+            return (short) Masker.maskByte(registers[index]);
         } else {
             throw new CPUException("Register out of range: " + index);
         }
@@ -20,7 +22,7 @@ public class RegisterBlock {
 
     public void setVX(int index, int value) throws CPUException {
         if(index >= 0 && index <= 15) {
-            registers[index] = (short) (value & 0xFF);
+            registers[index] = (short) Masker.maskByte(value);
         } else {
             throw new CPUException("Register out of range: " + index);
         }
@@ -30,8 +32,8 @@ public class RegisterBlock {
         return indexRegister;
     }
 
-    public void setIndexRegister(int value){
-        indexRegister = (value & 0xFFF);
+    public void setIndexRegister(int address){
+        indexRegister = Masker.maskAddress(address);
     }
 
     public int getProgramCounter(){
@@ -39,7 +41,7 @@ public class RegisterBlock {
     }
 
     public void jumpProgramCounter(int address){
-        programCounter = (address & 0xFFF);
+        programCounter = Masker.maskAddress(address);
     }
 
     public void incrementProgramCounter(){

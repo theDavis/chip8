@@ -1,5 +1,7 @@
 package io.github.thedavis.chip8.memory;
 
+import io.github.thedavis.chip8.util.Masker;
+
 public class Memory {
 
     private static final int MEMORY_SIZE = 4096;
@@ -36,6 +38,6 @@ public class Memory {
     }
 
     private short getSingleByte(int value){
-        return (short) (value & 0xFF);
+        return (short) Masker.maskByte(value);
     }
 }
