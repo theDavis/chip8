@@ -69,6 +69,6 @@ public class TestRegisterBlock {
         RegisterBlock registers = new RegisterBlock();
         registers.jumpProgramCounter(address);
         assertEquals(address, registers.getProgramCounter());
-        assertEquals(CPU.ROM_START, registers.getTopOfStack());
+        assertEquals(CPU.ROM_START, (int) registers.getTopOfStack());
     }
 }

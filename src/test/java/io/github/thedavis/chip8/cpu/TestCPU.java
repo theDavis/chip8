@@ -17,14 +17,15 @@ public class TestCPU {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    @Ignore("used to write ROM to memory to figure out instruction patterns")
+    @Ignore("Used to look at instructions")
     @Test
     public void test() throws Exception {
         Memory memory = new Memory();
         CPU cpu = new CPU(memory, new RegisterBlock());
         cpu.loadRom(new File("/home/thedavis/roms/chip8/PONG"));
-        System.out.println("0000200: "+Integer.toHexString(memory.read(0x200)));
-        System.out.println("0000201: "+Integer.toHexString(memory.read(0x201)));
+        for(int i = 0; i < 100; i++){
+            cpu.step();
+        }
     }
 
     @Test
@@ -56,7 +57,7 @@ public class TestCPU {
         new CPU(memory, registers).step();
 
         assertEquals(0x00A, registers.getProgramCounter());
-        assertEquals(CPU.ROM_START, registers.getTopOfStack());
+        assertEquals(CPU.ROM_START, (int) registers.getTopOfStack());
     }
 
     @Test
@@ -103,7 +104,33 @@ public class TestCPU {
         new CPU(memory, registers).step();
 
         assertEquals(v0 + jumpValue, registers.getProgramCounter());
-        assertEquals(CPU.ROM_START, registers.getTopOfStack());
+        assertEquals(CPU.ROM_START, (int) registers.getTopOfStack());
+    }
+
+    @Test
+    public void testCallSubroutine() throws Exception {
+        final int subAddress = 0x20A;
+        final int fullInstruction = 0x2000 | subAddress;
+
+        Memory memory = new Memory();
+        memory.write(0x200, (0xFF00 & fullInstruction) >> 8);
+        memory.write(0x201, (0xFF & fullInstruction));
+        memory.write(0x20A, 0x00);
+        memory.write(0x20B, 0xEE);
+
+        RegisterBlock registers = new RegisterBlock();
+
+        CPU cpu = new CPU(memory, registers);
+
+        cpu.step();
+
+        assertEquals(subAddress, registers.getProgramCounter());
+        assertEquals(CPU.ROM_START, (int) registers.getTopOfStack());
+
+        cpu.step();
+
+        assertEquals(CPU.ROM_START, registers.getProgramCounter());
+        assertEquals(null, registers.getTopOfStack());
     }
 
 }

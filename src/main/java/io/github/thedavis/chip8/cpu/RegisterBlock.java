@@ -2,7 +2,6 @@ package io.github.thedavis.chip8.cpu;
 
 import io.github.thedavis.chip8.util.Masker;
 
-import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class RegisterBlock {
@@ -56,7 +55,11 @@ public class RegisterBlock {
         programCounter += 2;
     }
 
-    int getTopOfStack(){
+    public void returnFromSubroutine(){
+        programCounter = stack.pop();
+    }
+
+    Integer getTopOfStack(){
         return stack.peek();
     }
 

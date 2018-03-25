@@ -69,34 +69,46 @@ public class CPU {
     private void execute(int[] decodedInstruction) throws CPUException{
         switch(decodedInstruction[0]){
             case 0x0:
-                System.out.println("Bunch of options");
+                if(0xEE == (decodedInstruction[1])){
+                    returnFromSubroutine();
+                    System.out.println("Return from sub");
+                } else {
+                    System.out.println("Couple options");
+                }
                 break;
             case 0x1:
                 jumpToAddress(decodedInstruction);
                 break;
             case 0x2:
+                jumpToAddress(decodedInstruction);
                 System.out.println("Call sub "+Integer.toHexString(decodedInstruction[1]));
                 break;
             case 0x3:
                 System.out.println("Skip next if Vx == NN");
+                registers.incrementProgramCounter();
                 break;
             case 0x4:
                 System.out.println("Skip next if Vx != NN");
+                registers.incrementProgramCounter();
                 break;
             case 0x5:
                 System.out.println("Skip next if Vx == Vy");
+                registers.incrementProgramCounter();
                 break;
             case 0x6:
                 loadVxRegister(decodedInstruction);
                 break;
             case 0x7:
                 System.out.println("Add NN to Vx (no carry)");
+                registers.incrementProgramCounter();
                 break;
             case 0x8:
                 System.out.println("Bunch of options");
+                registers.incrementProgramCounter();
                 break;
             case 0x9:
                 System.out.println("Skip next if Vx != Vy");
+                registers.incrementProgramCounter();
                 break;
             case 0xA:
                 loadIndexRegister(decodedInstruction);
@@ -106,19 +118,27 @@ public class CPU {
                 break;
             case 0xC:
                 System.out.println("Random");
+                registers.incrementProgramCounter();
                 break;
             case 0xD:
                 System.out.println("Draw");
+                registers.incrementProgramCounter();
                 break;
             case 0xE:
                 System.out.println("Bunch of things");
+                registers.incrementProgramCounter();
                 break;
             case 0xF:
                 System.out.println("Bunch of things");
+                registers.incrementProgramCounter();
                 break;
             default:
                 throw new CPUException("Invalid opcode: "+Integer.toHexString(decodedInstruction[0]));
         }
+    }
+
+    private void returnFromSubroutine() throws CPUException {
+        registers.returnFromSubroutine();
     }
 
     private void loadVxRegister(int[] decodedInstruction) throws CPUException {
