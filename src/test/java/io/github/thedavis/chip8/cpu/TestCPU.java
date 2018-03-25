@@ -56,6 +56,7 @@ public class TestCPU {
         new CPU(memory, registers).step();
 
         assertEquals(0x00A, registers.getProgramCounter());
+        assertEquals(CPU.ROM_START, registers.getTopOfStack());
     }
 
     @Test
@@ -102,6 +103,7 @@ public class TestCPU {
         new CPU(memory, registers).step();
 
         assertEquals(v0 + jumpValue, registers.getProgramCounter());
+        assertEquals(CPU.ROM_START, registers.getTopOfStack());
     }
 
 }
