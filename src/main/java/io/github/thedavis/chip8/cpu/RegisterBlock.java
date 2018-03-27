@@ -47,12 +47,16 @@ public class RegisterBlock {
     }
 
     public void jumpProgramCounter(int address){
-        stack.push(programCounter);
         programCounter = Masker.maskAddress(address);
     }
 
     public void incrementProgramCounter(){
         programCounter += 2;
+    }
+
+    public void callSubroutine(int address){
+        stack.push(programCounter);
+        jumpProgramCounter(address);
     }
 
     public void returnFromSubroutine(){

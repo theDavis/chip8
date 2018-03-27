@@ -69,6 +69,23 @@ public class TestRegisterBlock {
         RegisterBlock registers = new RegisterBlock();
         registers.jumpProgramCounter(address);
         assertEquals(address, registers.getProgramCounter());
+    }
+
+    @Test
+    public void testCallSubroutine(){
+        final int address = 0x400;
+        RegisterBlock registers = new RegisterBlock();
+        registers.callSubroutine(address);
+        assertEquals(address, registers.getProgramCounter());
         assertEquals(CPU.ROM_START, (int) registers.getTopOfStack());
+    }
+
+    @Test
+    public void testReturnFromSubroutine(){
+        RegisterBlock registers = new RegisterBlock();
+        registers.callSubroutine(0x400);
+        registers.returnFromSubroutine();
+        assertEquals(CPU.ROM_START, (int) registers.getProgramCounter());
+        assertEquals(null, registers.getTopOfStack());
     }
 }
