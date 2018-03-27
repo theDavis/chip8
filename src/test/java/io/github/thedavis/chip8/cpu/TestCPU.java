@@ -17,17 +17,6 @@ public class TestCPU {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    @Ignore("Used to look at instructions")
-    @Test
-    public void test() throws Exception {
-        Memory memory = new Memory();
-        CPU cpu = new CPU(memory, new RegisterBlock());
-        cpu.loadRom(new File("/home/thedavis/roms/chip8/PONG"));
-        for(int i = 0; i < 100; i++){
-            cpu.step();
-        }
-    }
-
     @Test
     public void testLoadRom() throws Exception {
         final byte[] romBytes = new byte[]{0x12, 0x34, 0x56, 0x78};
