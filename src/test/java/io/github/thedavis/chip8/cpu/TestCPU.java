@@ -131,4 +131,44 @@ public class TestCPU {
         assertEquals(null, registers.getTopOfStack());
     }
 
+    @Test
+    public void testSkipIfVXEquals() throws Exception{
+        final int register = 0x1;
+        final int value = 0xFF;
+        final int instruction = (0x3 << 12) + (register << 8) + value;
+
+        RegisterBlock registers = new RegisterBlock();
+        registers.setVX(register, value);
+
+        Memory memory = new Memory();
+        memory.write(CPU.ROM_START, (instruction & 0xFF00) >> 8);
+        memory.write(CPU.ROM_START+1, (instruction & 0xFF));
+
+        CPU cpu = new CPU(memory, registers);
+
+        cpu.step();
+
+        assertEquals(CPU.ROM_START+4, registers.getProgramCounter());
+    }
+
+    @Test
+    public void testSkipIfVXEquals_false() throws Exception{
+        final int register = 0x1;
+        final int value = 0xFF;
+        final int instruction = (0x3 << 12) + (register << 8) + value;
+
+        RegisterBlock registers = new RegisterBlock();
+        registers.setVX(register, 0x00);
+
+        Memory memory = new Memory();
+        memory.write(CPU.ROM_START, (instruction & 0xFF00) >> 8);
+        memory.write(CPU.ROM_START+1, (instruction & 0xFF));
+
+        CPU cpu = new CPU(memory, registers);
+
+        cpu.step();
+
+        assertEquals(CPU.ROM_START+2, registers.getProgramCounter());
+    }
+
 }

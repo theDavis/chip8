@@ -28,4 +28,9 @@ public class TestMasker {
     public void testMaskInstruction(){
         assertEquals(INSTRUCTION & 0xFFFF, Masker.maskInstruction(INSTRUCTION));
     }
+
+    @Test
+    public void testMaskRegisterAndShift() {
+        assertEquals((INSTRUCTION & 0xF00) >> 8, Masker.maskRegisterAndShift(INSTRUCTION));
+    }
 }

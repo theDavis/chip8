@@ -83,8 +83,7 @@ public class CPU {
                 callSubroutine(decodedInstruction);
                 break;
             case 0x3:
-                System.out.println("Skip next if Vx == NN");
-                registers.incrementProgramCounter();
+                skipIfVXEquals(decodedInstruction);
                 break;
             case 0x4:
                 System.out.println("Skip next if Vx != NN");
@@ -140,6 +139,28 @@ public class CPU {
         registers.returnFromSubroutine();
     }
 
+    private void jumpToAddress(int[] decodedInstruction){
+        int address = Masker.maskAddress(decodedInstruction[1]);
+        registers.jumpProgramCounter(address);
+        System.out.println("Jump to "+Integer.toHexString(address));
+    }
+
+    private void callSubroutine(int[] decodedInstruction){
+        int address = Masker.maskAddress(decodedInstruction[1]);
+        registers.callSubroutine(address);
+        System.out.println("Call sub at "+Integer.toHexString(address));
+    }
+
+    private void skipIfVXEquals(int[] decodedInstruction) throws CPUException{
+        int register = Masker.maskRegisterAndShift(decodedInstruction[1]);
+        int value = Masker.maskByte(decodedInstruction[1]);
+        if(registers.getVX(register) == value){
+            registers.incrementProgramCounter();
+        }
+        registers.incrementProgramCounter();
+        System.out.println("Skip if VX == NN " + Integer.toHexString(decodedInstruction[1]));
+    }
+
     private void loadVxRegister(int[] decodedInstruction) throws CPUException {
         int register = (decodedInstruction[1] & 0xF00) >> 8;
         int value = Masker.maskByte(decodedInstruction[1]);
@@ -153,18 +174,6 @@ public class CPU {
         registers.setIndexRegister(address);
         registers.incrementProgramCounter();
         System.out.println("Set I to "+Integer.toHexString(address));
-    }
-
-    private void jumpToAddress(int[] decodedInstruction){
-        int address = Masker.maskAddress(decodedInstruction[1]);
-        registers.jumpProgramCounter(address);
-        System.out.println("Jump to "+Integer.toHexString(address));
-    }
-
-    private void callSubroutine(int[] decodedInstruction){
-        int address = Masker.maskAddress(decodedInstruction[1]);
-        registers.callSubroutine(address);
-        System.out.println("Call sub at "+Integer.toHexString(address));
     }
 
     private void jumpToV0PlusNNN(int[] decodedInstruction) throws CPUException{
