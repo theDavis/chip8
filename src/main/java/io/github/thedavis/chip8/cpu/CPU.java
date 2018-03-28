@@ -95,8 +95,7 @@ public class CPU {
                 loadVxRegister(decodedInstruction);
                 break;
             case 0x7:
-                System.out.println("Add NN to Vx (no carry)");
-                registers.incrementProgramCounter();
+                addNNToVX(decodedInstruction);
                 break;
             case 0x8:
                 System.out.println("Bunch of options");
@@ -185,6 +184,16 @@ public class CPU {
         registers.setVX(register, value);
         registers.incrementProgramCounter();
         System.out.println("Set V" + Integer.toHexString(register) + " to " + Integer.toHexString(value));
+    }
+
+    private void addNNToVX(int[] decodedInstruction) throws CPUException {
+        int register = (decodedInstruction[1] & 0xF00) >> 8;
+        int value = Masker.maskByte(decodedInstruction[1]);
+        int sum = (registers.getVX(register) + value) & 0xFF;
+
+        registers.setVX(register, sum);
+        registers.incrementProgramCounter();
+        System.out.println("Add NN to VX " + Integer.toHexString(register));
     }
 
     private void loadIndexRegister(int[] decodedInstruction) throws CPUException {

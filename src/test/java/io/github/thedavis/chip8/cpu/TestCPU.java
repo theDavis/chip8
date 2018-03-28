@@ -238,4 +238,43 @@ public class TestCPU {
         assertEquals(CPU.ROM_START+2, registers.getProgramCounter());
     }
 
+    @Test
+    public void testAddNNToVX_no_overflow() throws Exception {
+        final int register = 0x4;
+        final int value = 0x10;
+        final int instruction = (0x7 << 12) + (register << 8) + value;
+
+        RegisterBlock registers = new RegisterBlock();
+        registers.setVX(register, value);
+
+        Memory memory = new Memory();
+        memory.write(CPU.ROM_START, (instruction & 0xFF00) >> 8);
+        memory.write(CPU.ROM_START+1, (instruction & 0xFF));
+
+        CPU cpu = new CPU(memory, registers);
+        cpu.step();
+
+        assertEquals(value*2, registers.getVX(register));
+    }
+
+    @Test
+    public void testAddNNToVX_with_overflow() throws Exception {
+        final int register = 0x6;
+        final int value = 0xFF;
+        final int instruction = (0x7 << 12) + (register << 8) + value;
+
+        RegisterBlock registers = new RegisterBlock();
+        registers.setVX(register, 0x01);
+
+        Memory memory = new Memory();
+        memory.write(CPU.ROM_START, (instruction & 0xFF00) >> 8);
+        memory.write(CPU.ROM_START+1, (instruction & 0xFF));
+
+        CPU cpu = new CPU(memory, registers);
+        cpu.step();
+
+        assertEquals(0x00, registers.getVX(register));
+        assertEquals(0x0, registers.getVX(0xF));
+    }
+
 }
