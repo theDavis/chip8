@@ -71,9 +71,10 @@ public class CPU {
             case 0x0:
                 if(0xEE == (decodedInstruction[1])){
                     returnFromSubroutine();
-                    System.out.println("Return from sub");
                 } else {
-                    System.out.println("Couple options");
+                    //TODO: 0x00E0 clear screen
+                    registers.incrementProgramCounter();
+                    System.out.println("clear screen");
                 }
                 break;
             case 0x1:
@@ -98,10 +99,20 @@ public class CPU {
                 addNNToVX(decodedInstruction);
                 break;
             case 0x8:
-                System.out.println("Bunch of options");
+                //TODO: 8XY0 set VX = VY
+                //TODO: 8XY1 set VX = VX | VY
+                //TODO: 8XY2 set VX = VX & VY
+                //TODO: 8XY3 set VX = VX ^ VY
+                //TODO: 8XY4 set VX += VY (VF=1 if carry else VF=0)
+                //TODO: 8XY5 set VX -= VY (VF=0 if borrow else VF=1)
+                //TODO: 8XY6 set VX = VY >> 1 (VF = VY's least significant bit)
+                //TODO: 8XY7 set VX = VY-VX (VF=0 if borrow else VF=1)
+                //TODO: 8XYE set VX = VY << 1 (VF = VY's most significant bit)
+                System.out.println("Bunch of VX operators");
                 registers.incrementProgramCounter();
                 break;
             case 0x9:
+                //TODO: 9XY0 skip if (VX != VY)
                 System.out.println("Skip next if Vx != Vy");
                 registers.incrementProgramCounter();
                 break;
@@ -112,19 +123,32 @@ public class CPU {
                 jumpToV0PlusNNN(decodedInstruction);
                 break;
             case 0xC:
+                //TODO: CXNN set VX=rand() & NN where rand()=0-255
                 System.out.println("Random");
                 registers.incrementProgramCounter();
                 break;
             case 0xD:
+                //TODO: DXYN Draw
                 System.out.println("Draw");
                 registers.incrementProgramCounter();
                 break;
             case 0xE:
-                System.out.println("Bunch of things");
+                //TODO: EX9E skip next if(key() == VX)
+                //TODO: EXA1 skip next if(key() != VX)
+                System.out.println("Bunch of keypress things");
                 registers.incrementProgramCounter();
                 break;
             case 0xF:
-                System.out.println("Bunch of things");
+                //TODO: FX07 set VX = delay timer
+                //TODO: FX0A set VX = get_key() (blocking)
+                //TODO: FX15 set delay_timer = VX
+                //TODO: FX18 set sound_timer = VX
+                //TODO: FX1E I += VX
+                //TODO: FX29 I = sprite_addr[VX]
+                //TODO: FX33 BCD?
+                //TODO: FX55 dump registers to memory starting at I
+                //TODO: FX65 load registers from memory starting at I
+                System.out.println("Bunch of timer/memory/index register things");
                 registers.incrementProgramCounter();
                 break;
             default:
@@ -134,6 +158,7 @@ public class CPU {
 
     private void returnFromSubroutine() throws CPUException {
         registers.returnFromSubroutine();
+        System.out.println("Return from subroutine");
     }
 
     private void jumpToAddress(int[] decodedInstruction){
