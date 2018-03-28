@@ -198,4 +198,44 @@ public class TestCPU {
         assertEquals(CPU.ROM_START+2, registers.getProgramCounter());
     }
 
+    @Test
+    public void testSkipIfVXEqualsVY() throws Exception {
+        final int registerX = 0x1;
+        final int registerY = 0x2;
+        final int instruction = (0x5 << 12) + (registerX << 8) + (registerY << 4);
+
+        RegisterBlock registers = new RegisterBlock();
+        registers.setVX(registerX, 0xFF);
+        registers.setVX(registerY, 0xFF);
+
+        Memory memory = new Memory();
+        memory.write(CPU.ROM_START, (instruction & 0xFF00) >> 8);
+        memory.write(CPU.ROM_START+1, (instruction & 0xFF));
+
+        CPU cpu = new CPU(memory, registers);
+        cpu.step();
+
+        assertEquals(CPU.ROM_START+4, registers.getProgramCounter());
+    }
+
+    @Test
+    public void testSkipIfVXEqualsVY_false() throws Exception {
+        final int registerX = 0x1;
+        final int registerY = 0x2;
+        final int instruction = (0x5 << 12) + (registerX << 8) + (registerY << 4);
+
+        RegisterBlock registers = new RegisterBlock();
+        registers.setVX(registerX, 0xFF);
+        registers.setVX(registerY, 0x55);
+
+        Memory memory = new Memory();
+        memory.write(CPU.ROM_START, (instruction & 0xFF00) >> 8);
+        memory.write(CPU.ROM_START+1, (instruction & 0xFF));
+
+        CPU cpu = new CPU(memory, registers);
+        cpu.step();
+
+        assertEquals(CPU.ROM_START+2, registers.getProgramCounter());
+    }
+
 }
