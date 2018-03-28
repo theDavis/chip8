@@ -86,8 +86,7 @@ public class CPU {
                 skipIfVXEquals(decodedInstruction);
                 break;
             case 0x4:
-                System.out.println("Skip next if Vx != NN");
-                registers.incrementProgramCounter();
+                skipIfVXNotEquals(decodedInstruction);
                 break;
             case 0x5:
                 System.out.println("Skip next if Vx == Vy");
@@ -159,6 +158,16 @@ public class CPU {
         }
         registers.incrementProgramCounter();
         System.out.println("Skip if VX == NN " + Integer.toHexString(decodedInstruction[1]));
+    }
+
+    private void skipIfVXNotEquals(int[] decodedInstruction) throws CPUException{
+        int register = Masker.maskRegisterAndShift(decodedInstruction[1]);
+        int value = Masker.maskByte(decodedInstruction[1]);
+        if(registers.getVX(register) != value){
+            registers.incrementProgramCounter();
+        }
+        registers.incrementProgramCounter();
+        System.out.println("Skip if VX != NN " + Integer.toHexString(decodedInstruction[1]));
     }
 
     private void loadVxRegister(int[] decodedInstruction) throws CPUException {
